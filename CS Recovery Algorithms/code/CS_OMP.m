@@ -1,39 +1,38 @@
 %% CS_OMP  Algorithm
 %-------------------------------------------------------------------------------------%
-%  CS_OMP  Algorithm (Õı½»Æ¥Åä×·×Ù·¨ Orthogonal Matching Pursuit)   
-%  ÊäÈë£ºy---²âÁ¿ĞÅºÅ  M X 1
-%           A---»Ö¸´¾ØÕó  M X N
-%           K---µü´ú´ÎÊı
-% Êä³ö £ºtheta---¹À¼ÆµÄÏ¡ÊèÏòÁ¿ N X 1
-%            erro_rn---Ã¿´Îµü´úµÄÎó²î
-%  ±à³ÌÈË£º ºÎÁõ                                    Email: aresmiki@163.com
-%  ±à³ÌÊ±¼ä£º2017Äê04ÔÂ26ÈÕ  Î÷ÄÏ½»Í¨´óÑ§Ç£Òı¶¯Á¦¹ú¼ÒÖØµãÊµÑéÊÒ
+%  CS_OMP  Algorithm (æ­£äº¤åŒ¹é…è¿½è¸ªæ³• Orthogonal Matching Pursuit)   
+%  è¾“å…¥ï¼šy---æµ‹é‡ä¿¡å·  M X 1
+%           A---æ¢å¤çŸ©é˜µ  M X N
+%           K---è¿­ä»£æ¬¡æ•°
+% è¾“å‡º ï¼štheta---ä¼°è®¡çš„ç¨€ç–å‘é‡ N X 1
+%            erro_rn---æ¯æ¬¡è¿­ä»£çš„è¯¯å·®
+%  ç¼–ç¨‹äººï¼š ä½•åˆ˜                                    Email: aresmiki@163.com
+%  ç¼–ç¨‹æ—¶é—´ï¼š2017å¹´04æœˆ26æ—¥  è¥¿å—äº¤é€šå¤§å­¦ç‰µå¼•åŠ¨åŠ›å›½å®¶é‡ç‚¹å®éªŒå®¤
 %                                        SWJTU  TPL
-%  ²Î¿¼ÎÄÏ×£ºJoel A. Tropp and Anna C. Gilbert 
+%  å‚è€ƒæ–‡çŒ®ï¼šJoel A. Tropp and Anna C. Gilbert 
 %  Signal Recovery From Random Measurements Via Orthogonal Matching
-%  Pursuit£¬IEEE TRANSACTIONS ON INFORMATION THEORY, VOL. 53, NO. 12,
+%  Pursuitï¼ŒIEEE TRANSACTIONS ON INFORMATION THEORY, VOL. 53, NO. 12,
 %------------------------------------------------------------------------------------------%
 %%   
 function [ theta,erro_rn ] = CS_OMP( y,A,K )
 N=max(size(A));
 M=min(size(A));
-theta=zeros(1,N);   %  ´ıÖØ¹¹µÄÏòÁ¿    
-Base_t=[];              %  ¼ÇÂ¼»ùÏòÁ¿µÄ¾ØÕó
-r_n=y;                  %  ²Ğ²îÖµ
-for times=1:K;                                    %  µü´ú´ÎÊı(ÓĞÔëÉùµÄÇé¿öÏÂ,¸Ãµü´ú´ÎÊıÎªK)
-    for col=1:N;                                  %  »Ö¸´¾ØÕóµÄËùÓĞÁĞÏòÁ¿
-        product(col)=abs(A(:,col)'*r_n);          %  »Ö¸´¾ØÕóµÄÁĞÏòÁ¿ºÍ²Ğ²îµÄÍ¶Ó°ÏµÊı(ÄÚ»ıÖµ) 
+theta=zeros(1,N);   %  å¾…é‡æ„çš„å‘é‡    
+Base_t=[];              %  è®°å½•åŸºå‘é‡çš„çŸ©é˜µ
+r_n=y;                  %  æ®‹å·®å€¼
+for times=1:K;                                    %  è¿­ä»£æ¬¡æ•°(æœ‰å™ªå£°çš„æƒ…å†µä¸‹,è¯¥è¿­ä»£æ¬¡æ•°ä¸ºK)
+    for col=1:N;                                  %  æ¢å¤çŸ©é˜µçš„æ‰€æœ‰åˆ—å‘é‡
+        product(col)=abs(A(:,col)'*r_n);          %  æ¢å¤çŸ©é˜µçš„åˆ—å‘é‡å’Œæ®‹å·®çš„æŠ•å½±ç³»æ•°(å†…ç§¯å€¼) 
     end
-    [val,pos]=max(product);                       %  ×î´óÍ¶Ó°ÏµÊı¶ÔÓ¦µÄÎ»ÖÃ£¬valÖµ£¬posÎ»ÖÃ
-    Base_t=[Base_t,A(:,pos)];                       %  ¾ØÕóÀ©³ä£¬¼ÇÂ¼×î´óÍ¶Ó°µÄ»ùÏòÁ¿
-    A(:,pos)=zeros(M,1);                          %  Ñ¡ÖĞµÄÁĞÖÃÁã£¨ÊµÖÊÉÏÓ¦¸ÃÈ¥µô£¬ÎªÁË¼òµ¥ÎÒ°ÑËüÖÃÁã£©
-    aug_y=(Base_t'*Base_t)^(-1)*Base_t'*y;   %  ×îĞ¡¶ş³Ë,Ê¹²Ğ²î×îĞ¡
-    r_n=y-Base_t*aug_y;                            %  ²Ğ²î
-    erro_rn(times)=norm(r_n,2);      %µü´úÎó²î
-    pos_array(times)=pos;                         %  ¼ÍÂ¼×î´óÍ¶Ó°ÏµÊıµÄÎ»ÖÃ
+    [val,pos]=max(product);                       %  æœ€å¤§æŠ•å½±ç³»æ•°å¯¹åº”çš„ä½ç½®ï¼Œvalå€¼ï¼Œposä½ç½®
+    Base_t=[Base_t,A(:,pos)];                       %  çŸ©é˜µæ‰©å……ï¼Œè®°å½•æœ€å¤§æŠ•å½±çš„åŸºå‘é‡
+    A(:,pos)=zeros(M,1);                          %  é€‰ä¸­çš„åˆ—ç½®é›¶ï¼ˆå®è´¨ä¸Šåº”è¯¥å»æ‰ï¼Œä¸ºäº†ç®€å•æˆ‘æŠŠå®ƒç½®é›¶ï¼‰
+    aug_y=(Base_t'*Base_t)^(-1)*Base_t'*y;   %  æœ€å°äºŒä¹˜,ä½¿æ®‹å·®æœ€å°
+    r_n=y-Base_t*aug_y;                            %  æ®‹å·®
+    erro_rn(times)=norm(r_n,2);      %è¿­ä»£è¯¯å·®
+    pos_array(times)=pos;                         %  çºªå½•æœ€å¤§æŠ•å½±ç³»æ•°çš„ä½ç½®
     if erro_rn(times)<1e-6 %
-            break; %Ìø³öforÑ­»·
+            break; %è·³å‡ºforå¾ªç¯
     end
 end
-theta(pos_array)=aug_y;                           %  ÖØ¹¹µÄÏòÁ¿
-end
+theta(pos_array)=aug_y;                           %  é‡æ„çš„å‘é‡
